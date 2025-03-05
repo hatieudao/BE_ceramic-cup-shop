@@ -1,0 +1,13 @@
+export const PRODUCT_ENTITY = 'Products';
+export const PRODUCT_TYPE_ENTITY = 'ProductTypes';
+export const USER_ENTITY = 'Users';
+export const ORDER_ENTITY = 'Orders';
+export const ORDER_ITEM_ENTITY = 'OrderItems';
+export const CART_ENTITY = 'Carts';
+export const CART_ITEM_ENTITY = 'CartItems';
+export const PAYMENT_ENTITY = 'Payments';
+export const PAYMENT_METHOD_ENTITY = 'PaymentMethods';
+export const PAYMENT_STATUS_ENTITY = 'PaymentStatuses';
+export const PAYMENT_TRANSACTION_ENTITY = 'PaymentTransactions';
+export const PAYMENT_TRANSACTION_STATUS_ENTITY = 'PaymentTransactionStatuses';
+export const PAYMENT_TRANSACTION_TYPE_ENTITY = 'PaymentTransactionTypes';
