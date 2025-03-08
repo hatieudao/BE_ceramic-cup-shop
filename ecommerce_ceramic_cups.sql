@@ -11,6 +11,8 @@ CREATE TABLE `Users` (
 CREATE TABLE `Address` (
   `id` CHAR(36) PRIMARY KEY DEFAULT (UUID()),
   `user_id` CHAR(36),
+  `full_name` VARCHAR(255) NOT NULL,
+  `email` VARCHAR(255) NOT NULL,
   `address_line1` VARCHAR(255),
   `address_line2` VARCHAR(255),
   `city` VARCHAR(100),
@@ -59,8 +61,11 @@ CREATE TABLE `Orders` (
   `user_id` CHAR(36),
   `payment_id` CHAR(36),
   `status` ENUM('pending','completed','canceled') DEFAULT 'pending',
+  `delivery_address_id` CHAR(36),
+  `delivery_charge` DECIMAL(10,2) DEFAULT 10,
   `total_price` DECIMAL(10,2),
-  `created_at` TIMESTAMP DEFAULT (CURRENT_TIMESTAMP)
+  `created_at` TIMESTAMP DEFAULT (CURRENT_TIMESTAMP),
+  `order_note` TEXT,
 );
 
 CREATE TABLE `OrderItems` (
@@ -69,6 +74,7 @@ CREATE TABLE `OrderItems` (
   `product_type_id` CHAR(36),
   `quantity` INT,
   `price` DECIMAL(10,2)
+  `created_at` TIMESTAMP DEFAULT (CURRENT_TIMESTAMP),
 );
 
 CREATE TABLE Carts (
@@ -106,6 +112,8 @@ ALTER TABLE `CartItems` ADD FOREIGN KEY (`cart_id`) REFERENCES `Cart` (`id`);
 ALTER TABLE `Address` ADD FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`);
 
 ALTER TABLE `Payment` ADD FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`);
+
+ALTER TABLE `Orders` ADD FOREIGN KEY (`delivery_address_id`) REFERENCES `Address` (`id`);
 
 -- Insert the admin user
 INSERT INTO Users (name, email, password, refresh_token, is_admin) 

@@ -65,7 +65,11 @@ export class AuthService {
       if (!thisUser) {
         throw new BadRequestException('User not found');
       }
-      const payload = { email: thisUser.email, sub: thisUser.id };
+      const payload = {
+        email: thisUser.email,
+        sub: thisUser.id,
+        isAdmin: thisUser.isAdmin,
+      };
       const refreshToken = thisUser.refreshToken;
 
       if (refreshToken) {

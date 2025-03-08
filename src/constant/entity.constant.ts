@@ -11,3 +11,4 @@ export const PAYMENT_STATUS_ENTITY = 'PaymentStatuses';
 export const PAYMENT_TRANSACTION_ENTITY = 'PaymentTransactions';
 export const PAYMENT_TRANSACTION_STATUS_ENTITY = 'PaymentTransactionStatuses';
 export const PAYMENT_TRANSACTION_TYPE_ENTITY = 'PaymentTransactionTypes';
+export const ADDRESS_ENTITY = 'Address';

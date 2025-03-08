@@ -6,8 +6,10 @@ import {
 import { OrdersRepository } from './orders.repository';
 import { CartsService } from '../carts/carts.service';
 import { ProductTypesRepository } from '../products/product-types.repository';
-import { Order } from './order.entity';
+import { Order } from './entity/order.entity';
 import { Cart } from '../carts/entity/cart.entity';
+import { CreateAddressDto } from '../address/dto/create-address.dto';
+import { OrderFilterDto } from './dto/order-filter.dto';
 
 @Injectable()
 export class OrdersService {
@@ -17,7 +19,10 @@ export class OrdersService {
     private readonly productTypesRepository: ProductTypesRepository,
   ) {}
 
-  async submitOrder(userId: string): Promise<Order> {
+  async submitOrder(
+    userId: string,
+    addressData: CreateAddressDto,
+  ): Promise<Order> {
     // Get user's cart
     const cart = await this.cartsService.getOrCreateCart(userId);
     if (!cart.data.cartItems || cart.data.cartItems.length === 0) {
@@ -31,6 +36,7 @@ export class OrdersService {
     const order = await this.ordersRepository.createOrder(
       userId,
       cart.data.cartItems,
+      addressData,
     );
 
     // Update product stock
@@ -44,8 +50,12 @@ export class OrdersService {
     return order;
   }
 
-  async getAllOrders(): Promise<Order[]> {
-    return this.ordersRepository.findAllOrders();
+  async getAllOrders(filterDto: OrderFilterDto) {
+    return this.ordersRepository.findAllOrders(filterDto);
+  }
+
+  async getUserOrders(userId: string, filterDto: OrderFilterDto) {
+    return this.ordersRepository.findUserOrders(userId, filterDto);
   }
 
   private async checkStockAvailability(cart: Cart): Promise<void> {

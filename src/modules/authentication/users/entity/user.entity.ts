@@ -1,7 +1,7 @@
 import { Column, Entity, OneToMany } from 'typeorm';
 import { BaseEntity } from '../../../../base/base.entity';
 import { USER_ENTITY } from '../../../../constant';
-import { Order } from '../../../orders/order.entity';
+import { Order } from '../../../orders/entity/order.entity';
 
 export enum UserRole {
   USER = 'user',
