@@ -1,0 +1,63 @@
+<html>
+  <head>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .header {
+        background-color: #f8f9fa;
+        padding: 20px;
+        text-align: center;
+        border-bottom: 3px solid #007bff;
+      }
+      .content {
+        padding: 20px;
+      }
+      .footer {
+        text-align: center;
+        padding: 20px;
+        font-size: 12px;
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <div class='header'>
+      <h1>Glass Shop Order Update</h1>
+    </div>
+
+    <div class='content'>
+      <p>Dear {{name}},</p>
+
+      <p>Your order <strong>#{{orderId}}</strong> has been {{status}}.</p>
+
+      {{#if status}}
+        {{#eq status 'created'}}
+          <p>Thank you for your order! We will process it shortly.</p>
+        {{/eq}}
+        {{#eq status 'processing'}}
+          <p>We are currently processing your order.</p>
+        {{/eq}}
+        {{#eq status 'shipped'}}
+          <p>Your order has been shipped and is on its way to you!</p>
+        {{/eq}}
+        {{#eq status 'delivered'}}
+          <p>Your order has been delivered. We hope you enjoy your purchase!</p>
+        {{/eq}}
+      {{/if}}
+
+      <p>If you have any questions about your order, please don't hesitate to
+        contact our customer service.</p>
+    </div>
+
+    <div class='footer'>
+      <p>This is an automated message, please do not reply to this email.</p>
+      <p>&copy; 2024 Glass Shop. All rights reserved.</p>
+    </div>
+  </body>
+</html>

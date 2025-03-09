@@ -24,6 +24,14 @@ export class OrdersRepository {
     private readonly addressRepository: Repository<Address>,
   ) {}
 
+  async findById(id: string): Promise<Order | null> {
+    return this.orderRepository.findOne({ where: { id } });
+  }
+
+  async save(order: Order): Promise<Order> {
+    return this.orderRepository.save(order);
+  }
+
   async createOrder(
     userId: string,
     cartItems: CartItem[],

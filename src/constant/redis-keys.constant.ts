@@ -1,0 +1,9 @@
+export const REDIS_KEYS = {
+  USER_CACHE: 'USER_CACHE',
+  PRODUCT_CACHE: 'PRODUCT_CACHE',
+  ORDER_CACHE: 'ORDER_CACHE',
+};
+export const REDIS_EXPIRATION_TIME = {
+  PRODUCT_CACHE: 60 * 60 * 24, // 24 hours
+  ORDER_CACHE: 60 * 60 * 24, // 24 hours
+};

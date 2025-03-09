@@ -15,3 +15,8 @@ export const MYSQL_PORT = 'MYSQL_PORT';
 export const MYSQL_DATABASE = 'MYSQL_DATABASE';
 export const MYSQL_USER = 'MYSQL_USER';
 export const MYSQL_PASSWORD = 'MYSQL_PASSWORD';
+
+// Redis connection constants
+export const REDIS_HOST = 'REDIS_HOST';
+export const REDIS_PORT = 'REDIS_PORT';
+export const REDIS_PASSWORD = 'REDIS_PASSWORD';

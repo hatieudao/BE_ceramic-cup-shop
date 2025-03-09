@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  UseGuards,
+  Param,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiForbiddenResponse,
@@ -84,5 +92,23 @@ export class OrdersController {
   @ApiForbiddenResponse({ description: 'Forbidden - Admin access required' })
   async getAllOrders(@Query() filterDto: OrderFilterDto) {
     return this.ordersService.getAllOrders(filterDto);
+  }
+
+  @Post('admin/update-status/:orderId')
+  @Roles(UserRole.ADMIN)
+  @UseGuards(RolesGuard)
+  @ApiOperation({ summary: 'Update order status (Admin only)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Order status updated successfully',
+    type: Order,
+  })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiForbiddenResponse({ description: 'Forbidden - Admin access required' })
+  async updateOrderStatus(
+    @Param('orderId') orderId: string,
+    @Body('status') status: OrderStatus,
+  ): Promise<Order> {
+    return this.ordersService.updateOrderStatus(orderId, status);
   }
 }
