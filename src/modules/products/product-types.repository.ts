@@ -15,4 +15,11 @@ export class ProductTypesRepository extends BaseRepository<ProductType> {
   async updateStock(id: string, stock: number): Promise<void> {
     await this.typeormRepository.update(id, { stock });
   }
+  async createProductType(
+    productType: Partial<ProductType>,
+  ): Promise<ProductType> {
+    const newProductType = this.typeormRepository.create(productType);
+    await this.typeormRepository.save(newProductType);
+    return newProductType;
+  }
 }

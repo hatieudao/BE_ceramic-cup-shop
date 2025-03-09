@@ -1168,9 +1168,9 @@
   resolved "https://registry.npmjs.org/@nestjs/passport/-/passport-9.0.3.tgz"
   integrity sha512-HplSJaimEAz1IOZEu+pdJHHJhQyBOPAYWXYHfAPQvRqWtw4FJF1VXl1Qtk9dcXQX1eKytDtH+qBzNQc19GWNEg==
 
-"@nestjs/platform-express@^11.0.1":
+"@nestjs/platform-express@^11.0.11":
   version "11.0.11"
-  resolved "https://registry.npmjs.org/@nestjs/platform-express/-/platform-express-11.0.11.tgz"
+  resolved "https://registry.yarnpkg.com/@nestjs/platform-express/-/platform-express-11.0.11.tgz#762d743b46addf52e086aa9a872a41ef803d132f"
   integrity sha512-iv6nH66i/RuRQufg5UUboQ4jQX4NuuePrYQpHB3ueiEIhJm2yLhhNYM6Y2l/76y9woW2eckbiqbzmW/JajAgeQ==
   dependencies:
     cors "2.8.5"
@@ -1646,6 +1646,13 @@
   integrity sha512-vyi1vzWgMzFMwZY7GSZYX0GU0dmtC8vLHwpgk+NWmwbwRSrlieVyJ9sn5elodwUfklJM7yGl0zQeet1brKTWaQ==
   dependencies:
     "@types/mjml-core" "*"
+
+"@types/multer@^1.4.12":
+  version "1.4.12"
+  resolved "https://registry.yarnpkg.com/@types/multer/-/multer-1.4.12.tgz#da67bd0c809f3a63fe097c458c0d4af1fea50ab7"
+  integrity sha512-pQ2hoqvXiJt2FP9WQVLPRO+AmiIm/ZYkavPlIQnx282u4ZrVdztx0pkh3jjpQt0Kz+YI0YhSG264y08UJKoUQg==
+  dependencies:
+    "@types/express" "*"
 
 "@types/node@*", "@types/node@^22.10.7":
   version "22.13.5"
@@ -5983,9 +5990,9 @@ ms@^2.1.1, ms@^2.1.3:
   resolved "https://registry.npmjs.org/ms/-/ms-2.1.3.tgz"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
 
-multer@1.4.5-lts.1:
+multer@1.4.5-lts.1, multer@^1.4.5-lts.1:
   version "1.4.5-lts.1"
-  resolved "https://registry.npmjs.org/multer/-/multer-1.4.5-lts.1.tgz"
+  resolved "https://registry.yarnpkg.com/multer/-/multer-1.4.5-lts.1.tgz#803e24ad1984f58edffbc79f56e305aec5cfd1ac"
   integrity sha512-ywPWvcDMeH+z9gQq5qYHCCy+ethsk4goepZ45GLD63fOu0YcNecQxi64nDs3qluZB+murG3/D4dJ7+dGctcCQQ==
   dependencies:
     append-field "^1.0.0"

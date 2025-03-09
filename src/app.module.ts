@@ -22,6 +22,7 @@ import { CartsModule } from './modules/carts/carts.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { RedisModule, RedisModuleOptions } from '@nestjs-modules/ioredis';
 import { NotificationsModule } from './modules/notifications/notifications.module';
+import { UploadModule } from './modules/upload/upload.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -62,6 +63,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
     CartsModule,
     OrdersModule,
     NotificationsModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],
