@@ -68,6 +68,8 @@ export class CartsController {
   }
 
   @Patch('items/:id/quantity')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Update cart item quantity' })
   @ApiResponse({
     status: 200,

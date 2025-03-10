@@ -12,6 +12,12 @@ import { UsersService } from './users/users.service';
 import { User } from './users/entity/user.entity';
 import * as sendGrid from '@sendgrid/mail';
 import { generate, GenerateOptions } from 'randomstring';
+import { InjectRedis } from '@nestjs-modules/ioredis';
+import Redis from 'ioredis';
+import {
+  REDIS_KEYS,
+  REDIS_EXPIRATION_TIME,
+} from '../../constant/redis-keys.constant';
 
 interface TokenPayload {
   exp?: number;
@@ -21,8 +27,7 @@ interface TokenPayload {
 
 const convertToUserInfor = (user: User) => ({
   email: user.email,
-  firstName: user.name,
-  lastName: user.name,
+  name: user.name,
   id: user.id,
   isAdmin: user.isAdmin,
 });
@@ -36,6 +41,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private readonly config: ConfigService,
+    @InjectRedis() private readonly redis: Redis,
   ) {
     const { accessTokenSignConfig, refreshTokenSignConfig } =
       getJwtConfig(config);
@@ -48,11 +54,34 @@ export class AuthService {
   }
 
   async getCurrentUser(id: string) {
+    // Try to get user from cache first
+    const cacheKey = `${REDIS_KEYS.USER_CACHE}:${id}`;
+    const cachedUser = await this.redis.get(cacheKey);
+
+    if (cachedUser) {
+      try {
+        return { data: JSON.parse(cachedUser) };
+      } catch (error) {
+        console.error('Error parsing cached user:', error);
+        await this.invalidateUserCache(id);
+      }
+    }
+
     const user = await this.usersService.getItemById(id);
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
-    return { data: convertToUserInfor(user) };
+
+    // Cache the user data
+    const userData = convertToUserInfor(user);
+    await this.redis.set(
+      cacheKey,
+      JSON.stringify(userData),
+      'EX',
+      REDIS_EXPIRATION_TIME.USER_CACHE,
+    );
+
+    return { data: userData };
   }
 
   async login(user: { email: string; password: string }) {
@@ -92,21 +121,51 @@ export class AuthService {
       const currentUser = await this.usersService.getUserByEmail(
         thisUser.email,
       );
+
+      // Cache user data after successful login
+      const userData = convertToUserInfor(thisUser);
+      await this.redis.set(
+        `${REDIS_KEYS.USER_CACHE}:${thisUser.id}`,
+        JSON.stringify(userData),
+        'EX',
+        REDIS_EXPIRATION_TIME.USER_CACHE,
+      );
+
       return {
         access_token: this.jwtService.sign(payload, this.accessTokenSignConfig),
         refresh_token: currentUser?.refreshToken,
-        userInfor: convertToUserInfor(thisUser),
+        userInfor: userData,
       };
     }
     return null;
+  }
+
+  async logout(accessToken: string): Promise<void> {
+    // Add token to invalid tokens set
+    await this.redis.set(
+      `${REDIS_KEYS.INVALID_TOKEN}:${accessToken}`,
+      '1',
+      'EX',
+      REDIS_EXPIRATION_TIME.INVALID_TOKEN,
+    );
+  }
+
+  async isTokenInvalid(accessToken: string): Promise<boolean> {
+    const invalidToken = await this.redis.get(
+      `${REDIS_KEYS.INVALID_TOKEN}:${accessToken}`,
+    );
+    return !!invalidToken;
+  }
+
+  private async invalidateUserCache(userId: string): Promise<void> {
+    await this.redis.del(`${REDIS_KEYS.USER_CACHE}:${userId}`);
   }
 
   async register(user: {
     email: string;
     password: string;
     confirmPassword?: string;
-    firstName?: string;
-    lastName?: string;
+    name: string;
   }): Promise<any> {
     const userFindByEmail = await this.usersService.getUserByEmail(user.email);
     if (userFindByEmail) {
@@ -122,7 +181,7 @@ export class AuthService {
       email: user.email,
       password: hash,
       refreshToken: '',
-      name: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
+      name: user.name,
       isAdmin: false,
     });
     const userId = await this.usersService.getUserIdByEmail(user.email);

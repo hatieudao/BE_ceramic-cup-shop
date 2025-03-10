@@ -111,4 +111,24 @@ export class OrdersController {
   ): Promise<Order> {
     return this.ordersService.updateOrderStatus(orderId, status);
   }
+
+  @Post(':orderId/cancel')
+  @ApiOperation({ summary: 'Cancel an order' })
+  @ApiResponse({
+    status: 200,
+    description: 'Order cancelled successfully',
+    type: Order,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - Order cannot be cancelled',
+  })
+  @ApiResponse({ status: 404, description: 'Order not found' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  async cancelOrder(
+    @Param('orderId') orderId: string,
+    @GetCurrentUserId() userId: string,
+  ): Promise<Order> {
+    return this.ordersService.cancelOrder(orderId, userId);
+  }
 }

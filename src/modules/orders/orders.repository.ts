@@ -41,17 +41,17 @@ export class OrdersRepository {
       // Create delivery address first
       const address = this.addressRepository.create({
         userId,
-        fullName: addressData.fullName,
-        addressLine1: addressData.addressLine1,
-        addressLine2: addressData.addressLine2,
-        city: addressData.city,
-        state: addressData.state,
-        postalCode: addressData.postalCode,
-        country: addressData.country,
-        phone: addressData.phone,
-        email: addressData.email,
-        isDefault: addressData.isDefault,
-        addressName: addressData.addressName,
+        fullName: addressData.fullName || '',
+        addressLine1: addressData.addressLine1 || '',
+        addressLine2: addressData.addressLine2 || '',
+        city: addressData.city || '',
+        state: addressData.state || '',
+        postalCode: addressData.postalCode || '',
+        country: addressData.country || '',
+        phone: addressData.phone || '',
+        email: addressData.email || '',
+        isDefault: addressData.isDefault || false,
+        addressName: addressData.addressName || 'other',
       });
       const savedAddress = await this.addressRepository.save(address);
 

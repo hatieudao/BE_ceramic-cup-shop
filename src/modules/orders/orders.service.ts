@@ -134,25 +134,9 @@ export class OrdersService implements OnModuleInit {
   }
 
   async getUserOrders(userId: string, filterDto: OrderFilterDto) {
-    const cacheKey = `${REDIS_KEYS.ORDER_CACHE}:${userId}:${JSON.stringify(filterDto)}`;
-    const cachedOrders = await this.redis.get(cacheKey);
-    if (cachedOrders) {
-      try {
-        return JSON.parse(cachedOrders) as Order[];
-      } catch (error) {
-        console.error('Error parsing cached orders:', error);
-        await this.invalidateOrderCache(userId, filterDto);
-      }
-    }
     const orders = await this.ordersRepository.findUserOrders(
       userId,
       filterDto,
-    );
-    await this.redis.set(
-      cacheKey,
-      JSON.stringify(orders),
-      'EX',
-      REDIS_EXPIRATION_TIME.ORDER_CACHE + randomNumber(60 * 15, 60 * 30),
     );
     return orders;
   }
@@ -189,14 +173,6 @@ export class OrdersService implements OnModuleInit {
     }
   }
 
-  private async invalidateOrderCache(
-    userId: string,
-    filterDto: OrderFilterDto,
-  ) {
-    const cacheKey = `${REDIS_KEYS.ORDER_CACHE}:${userId}:${JSON.stringify(filterDto)}`;
-    await this.redis.del(cacheKey);
-  }
-
   async updateOrderStatus(
     orderId: string,
     status: OrderStatus,
@@ -217,5 +193,46 @@ export class OrdersService implements OnModuleInit {
       }),
     );
     return order;
+  }
+
+  async cancelOrder(orderId: string, userId: string): Promise<Order> {
+    const order = await this.ordersRepository.findById(orderId);
+    if (!order) {
+      throw new NotFoundException(`Order with ID ${orderId} not found`);
+    }
+
+    // Check if the user owns this order
+    if (order.userId !== userId) {
+      throw new BadRequestException('You can only cancel your own orders');
+    }
+
+    // Check if the order can be canceled
+    if (order.status !== OrderStatus.PENDING) {
+      throw new BadRequestException('Only pending orders can be canceled');
+    }
+
+    // Cancel the order
+    order.status = OrderStatus.CANCELED;
+    await this.ordersRepository.save(order);
+
+    // Invalidate order cache
+    await this.invalidateOrderCache(userId);
+
+    // Send notification
+    this.notificationClient.emit('order_updated', {
+      userId: order.userId,
+      orderId: order.id,
+      status: OrderStatus.CANCELED,
+    });
+
+    return order;
+  }
+
+  private async invalidateOrderCache(
+    userId: string,
+    filterDto?: OrderFilterDto,
+  ) {
+    const cacheKey = `${REDIS_KEYS.ORDER_CACHE}:${userId}:${filterDto ? JSON.stringify(filterDto) : '*'}`;
+    await this.redis.del(cacheKey);
   }
 }

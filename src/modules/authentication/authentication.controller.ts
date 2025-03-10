@@ -74,7 +74,8 @@ export class AuthController {
       },
     },
   })
-  @ApiResponse({ status: 500, description: 'Login failed' })
+  @ApiResponse({ status: 500, description: 'Email or password is incorrect' })
+  @ApiResponse({ status: 400, description: 'Email or password is incorrect' })
   async login(@Body() userInfo, @Response() res): Promise<any> {
     const successLoginUser = await this.authservice.login(userInfo);
     if (successLoginUser) {
@@ -84,7 +85,7 @@ export class AuthController {
       });
       return res.status(200).send(successLoginUser.userInfor);
     }
-    return res.status(500).send('Login fail');
+    return res.status(400).send('Email or password is incorrect');
   }
 
   @Post('local/signup')
@@ -96,8 +97,7 @@ export class AuthController {
         email: { type: 'string', example: 'user@example.com' },
         password: { type: 'string', example: 'password123' },
         confirmPassword: { type: 'string', example: 'password123' },
-        firstName: { type: 'string', example: 'John' },
-        lastName: { type: 'string', example: 'Doe' },
+        name: { type: 'string', example: 'John' },
       },
     },
   })
@@ -218,6 +218,18 @@ export class AuthController {
       email: payload.email,
       sub: payload.sub,
     });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Logout user and invalidate access token' })
+  @ApiResponse({ status: 200, description: 'Logout successful' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async logout(@Request() req: any): Promise<any> {
+    const accessToken = this.authservice.getTokenFromRequestHeader(req);
+    await this.authservice.logout(accessToken);
+    return { message: 'Logout successful' };
   }
 
   @UseGuards(JwtAuthGuard)
